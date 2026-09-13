@@ -46,3 +46,8 @@ iso: $(KERNEL)
 
 clean:
 	-@$(RM) $(wildcard $(KERNEL) $(ASMOBJS) $(OBJFILES) os.iso iso/boot/$(KERNEL))
+
+run: clean iso
+	@qemu-system-x86_64 -pflash /opt/homebrew/share/qemu/edk2-x86_64-code.fd \
+        -cdrom os.iso \
+        -serial stdio -display none

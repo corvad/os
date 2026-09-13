@@ -130,10 +130,13 @@ stack_top:
 SECTION .boot exec
 BITS 64
 EXTERN multiboot2_init
+EXTERN _bss_begin
+EXTERN _bss_end
 
 _start64:
 	cli
-	xor ax, ax
+	
+	mov ax, 0x10
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
@@ -142,6 +145,13 @@ _start64:
 	
 	; setup stack
 	mov rsp, stack_top
+
+	; zero .bss
+	mov rdi, _bss_begin
+	mov rcx, _bss_end
+	sub rcx, rdi
+	xor eax, eax
+	rep stosb
 
 	; call multiboot2_init
 	mov rax, multiboot2_init

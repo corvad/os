@@ -1,47 +1,50 @@
 ENTRY(_start)
 
-LMA = 2M;
-VMA = 0xFFFFFFFF80000000;
-
 SECTIONS {
-	. = LMA;
+	. = 2M;
+
+	_kernel_begin = .;
 
 	.boot : ALIGN(8)
 	{
 		*(.multiboot)
-		*(.boot)
+		*(.boot .boot.*)
 	}
 
 	.bootdata : ALIGN(8)
 	{
-		*(.bootdata)
+		*(.bootdata .bootdata.*)
 	}
 
 	.bootbss (NOLOAD) : ALIGN(4K)
 	{
-		*(.bootbss)
+		*(.bootbss .bootbss.*)
 	}
 
-	. += VMA;
+	. = 0xFFFFFFFF80400000;
 
-	.text : AT(ADDR(.text) - VMA) ALIGN(4K)
+	.text : AT(ADDR(.text) - 0xFFFFFFFF80000000) ALIGN(4K)
 	{
-		*(.text)
+		*(.text .text.*)
 	}
 
-	.rodata : AT(ADDR(.rodata) - VMA) ALIGN(4K)
+	.rodata : AT(ADDR(.rodata) - 0xFFFFFFFF80000000) ALIGN(4K)
 	{
-		*(.rodata)
+		*(.rodata .rodata.*)
 	}
 
-	.data : AT(ADDR(.data) - VMA) ALIGN(4K)
+	.data : AT(ADDR(.data) - 0xFFFFFFFF80000000) ALIGN(4K)
 	{
-  		*(.data)
+  		*(.data .data.*)
 	}
 
-	.bss (NOLOAD) : AT(ADDR(.bss) - VMA) ALIGN(4K)
+	.bss (NOLOAD) : AT(ADDR(.bss) - 0xFFFFFFFF80000000) ALIGN(4K)
 	{
+		_bss_begin = .;
 		*(COMMON)
-		*(.bss)
+		*(.bss .bss.*)
+		_bss_end = .;
 	}
+
+	_kernel_end = .-0xFFFFFFFF80000000;
 }
